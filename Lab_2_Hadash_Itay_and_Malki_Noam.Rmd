@@ -103,6 +103,22 @@ fifa_players_attribures<-fifa[,c(1,12:45, 6)] # players different skills. Add ov
 fifa_players_positions<-fifa[,c(1,46:72,6)] # players ability at different positions . Add overall 
 ```
 
+**a)**
+```{r}
+fifa_players %>% ggplot(aes(Age)) + geom_histogram(color = "black", fill = "blue", bins = 33) +
+  coord_cartesian(ylim = c(0,1500)) 
+```
+
+**b)**
+```{r}
+fifa_players %>% ggplot(aes(x = League, y = Overall)) + geom_boxplot() + theme(axis.text = element_text(size = 7),
+                                                                               axis.text.x = element_text(angle = 90, 
+                                                                                                          hjust = 1))
+
+
+```
+
+
 PLEASE ADD YOUR SOLUTION BELOW, WITH A CLEAR SEPARATION BETWEEN THE PARTS!
 
 
