@@ -105,22 +105,47 @@ fifa_players_positions<-fifa[,c(1,46:72,6)] # players ability at different posit
 
 **a)**
 ```{r}
-fifa_players %>% ggplot(aes(Age)) + geom_histogram(color = "black", fill = "blue", bins = 33) +
-  coord_cartesian(ylim = c(0,1500)) 
+fifa_players %>% ggplot(aes(Age)) + geom_histogram(stat="count",color = "black", fill = "blue", bins = 33) + coord_cartesian(ylim = c(0,1500)) + scale_x_continuous(breaks = seq(16, 47, 5))
 ```
 
 **b)**
 ```{r}
-fifa_players %>% ggplot(aes(x = League, y = Overall)) + geom_boxplot() + theme(axis.text = element_text(size = 7),
-                                                                               axis.text.x = element_text(angle = 90, 
-                                                                                                          hjust = 1))
+fifa_players %>% ggplot(aes(x = League, y = Overall,fill=League)) + geom_boxplot() + theme(axis.text.x=element_blank()) + scale_fill_discrete(name="League",labels =c("Belgium Jupiler League","England Premier League","France Ligue 1"," Germany Bundesliga"," Italy Serie A ","Netherlands Eredivisie","other","Poland Ekstraklasa","Portugal Liga ZON Sagres","Scotland Premier League","Spain LIGA BBVA","Switzerland Super League") )  
+
 
 
 ```
 
+**c)**
+
+```{r}
+
+fifa_players %>% ggplot(aes(Wage)) + geom_density(fill="red") + scale_y_continuous(name="density", labels = comma) + scale_x_continuous(name="Wage", labels = comma)
+
+fifa_players_info %>% mutate(log_wage = ifelse(Wage==0,0,log(Wage))) %>% ggplot(aes(log_wage)) + geom_density(fill = "darkorange2") 
+
+
+
+
+```
+**d)**
+```{r}
+top_valued <-fifa_players_info  %>% select(Name,Value,Overall) %>%  arrange(desc(Value))
+top_valued$Value <- as.integer(top_valued$Value)
+
+top_overall <-fifa_players_info  %>% select(Name,Value,Overall) %>%  arrange(desc(Overall))
+top_overall <- as.integer(top_overall$Value)
+```
+
+
+**e)**
+```{r}
+top_teams <- fifa_players_info %>% group_by(Club) %>% summarise(Overall_avg = mean(Overall)) %>% arrange(desc(Overall_avg))
+p<-top_teams[-c(seq(11,637,1)),]
+```
+
 
 PLEASE ADD YOUR SOLUTION BELOW, WITH A CLEAR SEPARATION BETWEEN THE PARTS!
-
 
 ## Q2. Scouting Report (25 pt)
 
