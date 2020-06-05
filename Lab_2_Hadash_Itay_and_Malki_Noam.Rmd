@@ -275,7 +275,7 @@ attri <- fifa_players_attribures %>% select(-GK.diving,-GK.handling,-GK.kicking,
 
 melt_attri <- melt(attri)
 melt_attri %>% ggplot(aes(x=Var1,Var2,fill=value)) + geom_tile() + scale_fill_gradient(low="blue", high="red") + 
-  theme_bw() +  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  theme_bw() +  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
 
@@ -287,10 +287,28 @@ pos <- fifa_players_positions %>% select(ID,CAM, CB, CM, RB, RW, ST,Overall)
 attri <- attri <- fifa_players_attribures %>% select(-GK.diving,-GK.handling,-GK.kicking,-GK.positioning,-GK.reflexes,-Overall)
 pos_attri <- left_join(pos,attri,by="ID")
 pos_attri <- pos_attri %>% select(-ID)
+attri <- attri %>% select(-ID)
 cor_pos_attri<-round(cor(pos_attri),2)
 cor_pos_attri <- cor_pos_attri[c(8:36),c(1:7)]
 
-cor_pos_attri %>% ggcorrplot(colors = c("green","yellow","red")) + scale_x_discrete(limit = colnames(attri))
+cor_pos_attri %>% ggcorrplot() + scale_x_discrete(limit = colnames(attri))
+
+p <-as.data.frame(cor_pos_attri[,7])
+colnames(p)[1] <- "Overall"
+p <- cbind(row.names(p),p$Overall)
+p <-as.data.frame(p)
+colnames(p)<- c("skills","correlation_with_overall")
+p %>% arrange(desc(correlation_with_overall)) %>% head(7)
+```
+
+**c)**
+```{r}
+name_of_playres <- fifa_players_info %>% select(Name,ID)
+new_poss <- right_join(name_of_playres,pos,by="ID") %>% select(-ID)
+
+
+
+
 
 ```
 
