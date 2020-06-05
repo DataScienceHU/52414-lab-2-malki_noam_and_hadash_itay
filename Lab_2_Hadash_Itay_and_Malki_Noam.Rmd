@@ -228,6 +228,18 @@ fifa_players_info %>% filter(Age<=21,Overall>70) %>% ggplot(aes(x=Wage,y=Potenti
 
 undervalued_players <- fifa_players_info %>% filter(Age<=21,Overall>70) %>%  arrange(Wage,desc(Potential)) %>% select(Name,Age,Nationality,Overall,Potential,Wage)
 
+wage_avg <- function(potential){
+  result <- fifa_players_info %>% filter(Overall==potential) %>% summarise(mean_wage = mean(Wage))
+  return(ceiling(result))
+}
+
+wage_calculator <-function(potential,wage) {
+  if(potential<=83||wage == 0){
+    return(wage_avg(potential))
+  }else{
+    new_wage <- 250 * exp(potential - 80)
+  }
+}
 
 ```
 
@@ -255,7 +267,32 @@ and list them in a table.
 ![Example of a Spider chart](https://i1.wp.com/statsbomb.com/wp-content/uploads/2014/01/Messi2013_NPG.jpg)
 
 
-PLEASE ADD YOUR SOLUTION BELOW, WITH A CLEAR SEPARATION BETWEEN THE PARTS!  
+PLEASE ADD YOUR SOLUTION BELOW, WITH A CLEAR SEPARATION BETWEEN THE PARTS! 
+
+**a)**
+```{r}
+attri <- fifa_players_attribures %>% select(-GK.diving,-GK.handling,-GK.kicking,-GK.positioning,-GK.reflexes,-ID,-Overall) %>% cor() %>% round(2)
+
+melt_attri <- melt(attri)
+melt_attri %>% ggplot(aes(x=Var1,Var2,fill=value)) + geom_tile() + scale_fill_gradient(low="blue", high="red") + 
+  theme_bw() +  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+```
+
+
+**b)**
+```{r}
+library(ggcorrplot)
+pos <- fifa_players_positions %>% select(ID,CAM, CB, CM, RB, RW, ST,Overall)
+attri <- attri <- fifa_players_attribures %>% select(-GK.diving,-GK.handling,-GK.kicking,-GK.positioning,-GK.reflexes,-Overall)
+pos_attri <- left_join(pos,attri,by="ID")
+pos_attri <- pos_attri %>% select(-ID)
+cor_pos_attri<-round(cor(pos_attri),2)
+cor_pos_attri <- cor_pos_attri[c(8:36),c(1:7)]
+
+cor_pos_attri %>% ggcorrplot(colors = c("green","yellow","red")) + scale_x_discrete(limit = colnames(attri))
+
+```
 
 
 
