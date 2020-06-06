@@ -230,17 +230,18 @@ undervalued_players <- fifa_players_info %>% filter(Age<=21,Overall>70) %>%  arr
 
 wage_avg <- function(potential){
   result <- fifa_players_info %>% filter(Overall==potential) %>% summarise(mean_wage = mean(Wage))
-  return(ceiling(result))
+  return(as.integer(ceiling(result)))
 }
 
 wage_calculator <-function(potential,wage) {
-  if(potential<=83||wage == 0){
-    return(wage_avg(potential))
-  }else{
-    new_wage <- 250 * exp(potential - 80)
-  }
+  ifelse(potential <= 83, new_wage <- 10000, new_wage <- ceiling(1.5 * wage + 250 * exp(potential - 80)))
+  return(new_wage)
 }
 
+top_10_undervalued <- data.frame(head(undervalued_players, 10))
+top_10_undervalued <- mutate(top_10_undervalued, wage_proposition = wage_calculator(Potential, Wage))
+
+colnames(top_10_undervalued)
 ```
 
 
