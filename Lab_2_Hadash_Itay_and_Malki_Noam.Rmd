@@ -228,18 +228,15 @@ fifa_players_info %>% filter(Age<=21,Overall>70) %>% ggplot(aes(x=Wage,y=Potenti
 
 undervalued_players <- fifa_players_info %>% filter(Age<=21,Overall>70) %>%  arrange(Wage,desc(Potential)) %>% select(Name,Age,Nationality,Overall,Potential,Wage)
 
-wage_avg <- function(potential){
-  result <- fifa_players_info %>% filter(Overall==potential) %>% summarise(mean_wage = mean(Wage))
-  return(ceiling(result))
-}
 
-wage_calculator <-function(potential,wage) {
-  if(potential<=83||wage == 0){
-    return(wage_avg(potential))
-  }else{
-    new_wage <- 250 * exp(potential - 80)
-  }
-}
+result <- fifa_players_info %>% select(Potential,Wage) %>% group_by(Potential) %>% summarise(wage_avg <-ceiling(mean(Wage)))
+colnames(result)[2]<- "fair salary offer"
+under_all <- left_join(result,undervalued_players,by="Potential")
+under_all <- na.omit(under_all)
+under_all$`fair salary offer`<- round(under_all$`fair salary offer`,-3)
+under_all %>% select(Name,Potential,Wage,`fair salary offer`) %>% arrange(Wage,desc(Potential)) %>% head(10)  %>%  arrange(desc(`fair salary offer`))
+
+
 
 ```
 
@@ -275,7 +272,7 @@ attri <- fifa_players_attribures %>% select(-GK.diving,-GK.handling,-GK.kicking,
 
 melt_attri <- melt(attri)
 melt_attri %>% ggplot(aes(x=Var1,Var2,fill=value)) + geom_tile() + scale_fill_gradient(low="blue", high="red") + 
-  theme_bw() +  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme_bw() +  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + labs(title = "correlation betweem diffrent abilitys")
 
 ```
 
@@ -291,7 +288,7 @@ attri <- attri %>% select(-ID)
 cor_pos_attri<-round(cor(pos_attri),2)
 cor_pos_attri <- cor_pos_attri[c(8:36),c(1:7)]
 
-cor_pos_attri %>% ggcorrplot() + scale_x_discrete(limit = colnames(attri))
+cor_pos_attri %>% ggcorrplot() + scale_x_discrete(limit = colnames(attri)) + labs(title = "correlation between chosen positions and Overall and playres skils")
 
 p <-as.data.frame(cor_pos_attri[,7])
 colnames(p)[1] <- "Overall"
@@ -303,11 +300,42 @@ p %>% arrange(desc(correlation_with_overall)) %>% head(7)
 
 **c)**
 ```{r}
+library(fmsb)
 name_of_playres <- fifa_players_info %>% select(Name,ID)
-new_poss <- right_join(name_of_playres,pos,by="ID") %>% select(-ID)
+new_poss <- right_join(name_of_playres,pos,by="ID") %>% select(-ID,-Overall)
+best_CAM <- new_poss %>% arrange(desc(CAM))
+best_CAM <- as.numeric(as.matrix(best_CAM[1,]))
+best_CB <-  new_poss  %>% arrange(desc(CB))
+best_CB <-  as.numeric(as.matrix(best_CB[1,]))
+best_CM <-new_poss%>% arrange(desc(CM))
+best_CM <-  as.numeric(as.matrix(best_CM[1,]))
+best_RB <-new_poss %>% arrange(desc(RB))
+best_RB <-  as.numeric(as.matrix(best_RB[4,])) 
+best_RW <-new_poss  %>% arrange(desc(RW))
+best_RW <- as.numeric(as.matrix(best_RW[3,]))
+best_ST <- new_poss  %>% arrange(desc(ST))
+best_ST <- as.numeric(as.matrix(best_ST[1,]))
 
+best_team <- as.data.frame(as.matrix(rbind(best_CAM,best_CB,best_CM,best_RB,best_RW,best_ST)))
+best_team <- best_team %>% select(-V1)
+best_team <- as.data.frame(rbind(rep(100,6),rep(45,6),best_team))
+rownames(best_team) <- c("max","min","L.Messi" , "Sergio Ramos" , "T.Kroos" , "	Marcelo" , "Neymar" , "Cristiano Ronaldo" )
+colnames(best_team)<- c("CAM","CB","CM","RB","RW","ST")
+radarchart(best_team,seg = 5,plwd = 2,axistype = 2,plty = 1,palcex = 0.8,vlcex = 0.7,pcol = c("red",
+"deeppink","dodgerblue4","gold","burlywood4","green4"),title = "DREAM TEAM")
 
+legend(x=1.1, y=1, legend = rownames(best_team)[3:8], bty = "n", pch= 16 , text.col = "black",col =c("red",
+"deeppink","dodgerblue4","gold","burlywood4","green4") , cex=0.8, pt.cex=1)
 
+right_join(name_of_playres,pos,by="ID") %>% select(-ID,Overall) %>% filter(Name %in% c("L. Messi","Sergio Ramos","T. Kroos","Marcelo","Neymar", "Cristiano Ronaldo"),Overall>=80) %>% select(Overall) %>% summarise(Overall=mean(Overall))
+
+```
+
+**d)**
+```{r}
+id_age <- fifa_players %>% select(Age,ID)
+skill <- fifa_players_attribures %>% select(-GK.diving,-GK.handling,-GK.kicking,-GK.positioning,-GK.reflexes,-Overall)
+left_join(id_age,skill,by = "ID") %>% select(-ID) %>% group_by(Age) %>% summarise_all(list(mean)) %>% filter(Age<=35) %>% melt(id="Age") %>% ggplot(aes(x=Age,y=value,color=variable)) + geom_line(lwd=1.1) + coord_cartesian(ylim = c(30,70),xlim = c(16,35)) 
 
 
 ```
