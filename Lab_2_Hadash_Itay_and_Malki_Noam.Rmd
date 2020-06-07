@@ -228,6 +228,7 @@ fifa_players_info %>% filter(Age<=21,Overall>70) %>% ggplot(aes(x=Wage,y=Potenti
 
 undervalued_players <- fifa_players_info %>% filter(Age<=21,Overall>70) %>%  arrange(Wage,desc(Potential)) %>% select(Name,Age,Nationality,Overall,Potential,Wage)
 
+<<<<<<< HEAD
 
 result <- fifa_players_info %>% select(Potential,Wage) %>% group_by(Potential) %>% summarise(wage_avg <-ceiling(mean(Wage)))
 colnames(result)[2]<- "fair salary offer"
@@ -237,7 +238,22 @@ under_all$`fair salary offer`<- round(under_all$`fair salary offer`,-3)
 under_all %>% select(Name,Potential,Wage,`fair salary offer`) %>% arrange(Wage,desc(Potential)) %>% head(10)  %>%  arrange(desc(`fair salary offer`))
 
 
+=======
+wage_avg <- function(potential){
+  result <- fifa_players_info %>% filter(Overall==potential) %>% summarise(mean_wage = mean(Wage))
+  return(as.integer(ceiling(result)))
+}
 
+wage_calculator <-function(potential,wage) {
+  ifelse(potential <= 83, new_wage <- 10000, new_wage <- ceiling(1.5 * wage + 250 * exp(potential - 80)))
+  return(new_wage)
+}
+>>>>>>> a4984b47db5c6c95152d910817e3dd1067860dbb
+
+top_10_undervalued <- data.frame(head(undervalued_players, 10))
+top_10_undervalued <- mutate(top_10_undervalued, wage_proposition = wage_calculator(Potential, Wage))
+
+colnames(top_10_undervalued)
 ```
 
 
