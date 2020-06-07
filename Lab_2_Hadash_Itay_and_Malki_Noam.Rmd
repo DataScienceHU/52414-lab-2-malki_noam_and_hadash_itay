@@ -115,6 +115,11 @@ fifa_players %>% ggplot(aes(x = League, y = Overall,fill=League)) + geom_boxplot
 
 
 ```
+<br>**Answer**<br>
+
+It seems that Spain LIGA BBVA have especially good as we can see that their Q.75 is high compared to the other leagues. <br>
+Also we can se that the Switzerland Super League have especially bad players because,their Q.25 is low compared to the other leagues.
+
 
 **c)**
 
@@ -125,13 +130,31 @@ fifa_players %>% ggplot(aes(Wage)) + geom_density(fill="red") + scale_y_continuo
 skewness(fifa_players$Wage)
 kurtosis(fifa_players$Wage)
 fifa_players %>% ggplot(aes(sample = Wage)) + stat_qq() + stat_qq_line(color="red")
-fifa_players_info %>% mutate(log_wage = ifelse(Wage==0,0,log(Wage))) %>% ggplot(aes(log_wage)) + geom_density(fill = "darkorange2") 
+fifa_players_info %>% mutate(log_wage = ifelse(Wage==0,0,log(Wage))) %>% ggplot(aes(log_wage)) + geom_density(fill = "darkorange2") + labs(x="log wage") 
 skewness(ifelse(fifa_players$Wage==0,0,log(fifa_players$Wage)))
 kurtosis(ifelse(fifa_players$Wage==0,0,log(fifa_players$Wage)))
 fifa_players %>% ggplot(aes(sample =ifelse(Wage==0,0,log(Wage)))) + stat_qq() + stat_qq_line(color="red")
 
 ```
-**d)**
+<br>**Answer**<br>
+
+The logrithem scale of the wage density is a better visualization of than the <br> 
+non logrithem scale because it lets the viewer the density of players who make a high salary next to the players who make a low one. <br> 
+Unlike the non logrithem plot that show mostely the playres who make low salary. <br>
+
+The skewness & kurtosis of the  wage distribution are 7.016302 and 88.32211.<br>
+the skewness & kurtosis of the log wage distribution are -1.503398 and 7.967098.<br>
+
+Because the wage distribution has a skewness of 7.016302 it means that this <br> distribution has a "fat tail" on the positive side of the x axis.<br>
+Also, becaue the log wage distribution has a skewness of -1.503398 that this <br> distribution has a "fat tail" on the negative side of the x axis.<br>
+
+The log wage distributiom is described by a Normal distribution from two reasons.<br>
+1) the the skewness & kurtosis of the log wage are closer to the one of a normal distribution(the skewness & kurtosis of the normal distribution are 0 ).<br>
+2) as we can see from the qq-plots about half of the data is fitted as we will<br>expect from a normal distribution(unlike the wage distribution who has a very "fat" tail). 
+
+
+
+<br>**d)**<br>
 ```{r}
 top_valued <-fifa_players_info  %>% select(Name,Value,Overall) %>%  arrange(desc(Value))
 top_valued$Value <- as.integer(top_valued$Value)
@@ -140,8 +163,12 @@ top_overall <-fifa_players_info  %>% select(Name,Value,Overall) %>%  arrange(des
 top_overall$Value <- as.integer(top_overall$Value)
 head(top_valued,10)
 head(top_overall,10)
+z<-top_overall %>% filter(Value<=top_valued$Value[10])
+z[1,]
 ```
 
+<br>**Answer**<br>
+The best player not in the top-10 valued players is M.Neuer
 
 **e)**
 ```{r}
@@ -174,7 +201,7 @@ Prepare a table showing the 10 most-undervalued players, i.e. currently lowest p
 
 
 PLEASE ADD YOUR SOLUTION BELOW, WITH A CLEAR SEPARATION BETWEEN THE PARTS!
-**a)**
+<br>**a)**<br>
 ```{r}
 nati <- as.vector(fifa_players$Nationality)
 nati[which(nati=="England"|nati=="Wales"|nati=="Scotland"|nati=="Northern Ireland")]<- "United Kingdom"
@@ -189,6 +216,12 @@ mapCountryData(jj,"Freq",mapTitle = "NUMBER OF PLAYERS",lwd = 1.3,catMethod=c(se
 
 ```
 
+
+<br>**Answer**<br>
+I will recommend to travel to Algeria that has 57 players and
+
+
+
 **b)**
 ```{r}
 map_over <- fifa_players %>% group_by(Nationality) %>%  summarise(Overall_avg=mean(Overall))
@@ -201,9 +234,15 @@ map_over<-as.data.frame(map_over)
 colnames(map_over)[1] <- "Country"
 map_over$Overall_avg<-as.numeric(as.character(map_over$Overall_avg))
 jj2<-joinCountryData2Map(map_over,nameJoinColumn = "Country","NAME")
-mapCountryData(jj2,nameColumnToPlot = "Overall_avg",catMethod=c(seq(50,75,5)))
+mapCountryData(jj2,nameColumnToPlot = "Overall_avg",catMethod=c(seq(50,75,5)),mapTitle = "Overall average")
 
 ```
+
+<br>**Answer**<br>
+I will recommend to travel to Algeria that has 57 players and have a Overall average of 70.94737
+
+
+
 **c)**
 ```{r}
 fifa_players_info %>% filter(Age<=35) %>%  group_by(Age) %>% summarise(Overll_avg = mean(Overall)) %>% ggplot(aes(x=Age,y=Overll_avg,)) + geom_bar(stat = "identity",fill="green",color="black",width = 0.7 ,position = position_dodge(width=0.5),lwd=1) + coord_cartesian(ylim = c(0,70),xlim = c(16,35))  + scale_y_continuous(breaks = seq(0, 70, 10)) + scale_x_continuous(breaks = seq(16, 35,1)) + labs(title = "Overall average abilty distribution in age",y="Overall average")
@@ -212,7 +251,7 @@ fifa_players_info %>% filter(Age<=35) %>%  group_by(Age) %>% summarise(Overll_av
 
 ```
 
-**d)**
+<br>**d)**<br>
 ```{r}
 players_under_35 <- fifa_players_info %>% filter(Age<=35) %>% select(Name,Age,Overall,Potential) %>% mutate(difference = Potential - Overall)
 
@@ -220,15 +259,16 @@ players_under_35 %>% group_by(Age) %>% summarise(difference_avg = mean(differenc
 
 
 ```
-
-**e)**
+<br>**Answer**<br>
+We should expect to find players for future development based on this graph<b>
+on the ages of 16/17, because those are the ages that have the most "space" for<br> future development between their Overall ability and thier Potential.  
+<br>**e)**<br>
 
 ```{r}
 fifa_players_info %>% filter(Age<=21,Overall>70) %>% ggplot(aes(x=Wage,y=Potential)) + geom_point() + coord_cartesian(ylim = c(75,95),xlim = c(0,200000))
 
 undervalued_players <- fifa_players_info %>% filter(Age<=21,Overall>70) %>%  arrange(Wage,desc(Potential)) %>% select(Name,Age,Nationality,Overall,Potential,Wage)
 
-<<<<<<< HEAD
 
 result <- fifa_players_info %>% select(Potential,Wage) %>% group_by(Potential) %>% summarise(wage_avg <-ceiling(mean(Wage)))
 colnames(result)[2]<- "fair salary offer"
@@ -238,22 +278,7 @@ under_all$`fair salary offer`<- round(under_all$`fair salary offer`,-3)
 under_all %>% select(Name,Potential,Wage,`fair salary offer`) %>% arrange(Wage,desc(Potential)) %>% head(10)  %>%  arrange(desc(`fair salary offer`))
 
 
-=======
-wage_avg <- function(potential){
-  result <- fifa_players_info %>% filter(Overall==potential) %>% summarise(mean_wage = mean(Wage))
-  return(as.integer(ceiling(result)))
-}
 
-wage_calculator <-function(potential,wage) {
-  ifelse(potential <= 83, new_wage <- 10000, new_wage <- ceiling(1.5 * wage + 250 * exp(potential - 80)))
-  return(new_wage)
-}
->>>>>>> a4984b47db5c6c95152d910817e3dd1067860dbb
-
-top_10_undervalued <- data.frame(head(undervalued_players, 10))
-top_10_undervalued <- mutate(top_10_undervalued, wage_proposition = wage_calculator(Potential, Wage))
-
-colnames(top_10_undervalued)
 ```
 
 
@@ -287,11 +312,13 @@ PLEASE ADD YOUR SOLUTION BELOW, WITH A CLEAR SEPARATION BETWEEN THE PARTS!
 attri <- fifa_players_attribures %>% select(-GK.diving,-GK.handling,-GK.kicking,-GK.positioning,-GK.reflexes,-ID,-Overall) %>% cor() %>% round(2)
 
 melt_attri <- melt(attri)
-melt_attri %>% ggplot(aes(x=Var1,Var2,fill=value)) + geom_tile() + scale_fill_gradient(low="blue", high="red") + 
-  theme_bw() +  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + labs(title = "correlation betweem diffrent abilitys")
+colnames(melt_attri)[3] <- "correlation"
+melt_attri %>% ggplot(aes(x=Var1,Var2,fill=correlation)) + geom_tile() + scale_fill_gradient(low="blue", high="red") + 
+  theme_bw() +  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + labs(title = "correlation betweem diffrent abilitys",x="",y="") 
 
 ```
-
+<br>**Answer**<br>
+two skills seem least correlated with other skills are strength and jumping.
 
 **b)**
 ```{r}
@@ -304,7 +331,7 @@ attri <- attri %>% select(-ID)
 cor_pos_attri<-round(cor(pos_attri),2)
 cor_pos_attri <- cor_pos_attri[c(8:36),c(1:7)]
 
-cor_pos_attri %>% ggcorrplot() + scale_x_discrete(limit = colnames(attri)) + labs(title = "correlation between chosen positions and Overall and playres skils")
+cor_pos_attri %>% ggcorrplot() + scale_x_discrete(limit = colnames(attri)) + labs(title = "correlation between chosen positions and Overall and playres skils") + theme(title = element_text(color="black",size=8,face="bold"),axis.ticks = element_line())
 
 p <-as.data.frame(cor_pos_attri[,7])
 colnames(p)[1] <- "Overall"
@@ -348,12 +375,29 @@ right_join(name_of_playres,pos,by="ID") %>% select(-ID,Overall) %>% filter(Name 
 ```
 
 **d)**
-```{r}
+```{r,fig.width= 13,fig.height= 13}
 id_age <- fifa_players %>% select(Age,ID)
 skill <- fifa_players_attribures %>% select(-GK.diving,-GK.handling,-GK.kicking,-GK.positioning,-GK.reflexes,-Overall)
-left_join(id_age,skill,by = "ID") %>% select(-ID) %>% group_by(Age) %>% summarise_all(list(mean)) %>% filter(Age<=35) %>% melt(id="Age") %>% ggplot(aes(x=Age,y=value,color=variable)) + geom_line(lwd=1.1) + coord_cartesian(ylim = c(30,70),xlim = c(16,35)) 
+q<-left_join(id_age,skill,by = "ID") %>% select(-ID) %>% group_by(Age) %>% summarise_all(list(mean)) %>% filter(Age<=35) %>% melt(id="Age")
+colnames(q)[2:3] <- c("skill","ability")
+
+q %>%  ggplot(aes(x=Age,y=ability)) + geom_line(lwd=2,color="red") + coord_cartesian(ylim = c(30,70),xlim = c(15,35)) +theme_bw() + labs(title = "players skill as a function of time") + facet_wrap(~q$skill) + theme(axis.title.x =element_text(color="black",size=15,face="bold"),axis.text.x =element_text(color="black",size=12,face="bold"),axis.text.y =element_text(color="black",size=15,face="bold"),axis.title.y = element_text(color="black",size=15,face="bold"),title = element_text(color="black",size=15,face="bold"))  
 
 
+```
+
+
+**e)**
+```{r}
+ski <- fifa_players_attribures %>% select(-GK.diving,-GK.handling,-GK.kicking,-GK.positioning,-GK.reflexes,)
+ski <- left_join(name_of_playres,ski,by="ID")
+model<-lm(Overall ~. -ID -Name,data=ski)
+summary(model)
+
+ski <-cbind(ski,model$fitted.values)
+colnames(ski)[33] <- "fitted values"
+ski <- ski %>% mutate(diff= Overall -`fitted values`) # computing the eror manualy
+ski %>% select(Name,Overall,`fitted values`,diff) %>% arrange(diff) %>%  head(10)
 ```
 
 
@@ -378,19 +422,20 @@ DIV <- function(category_vec){
   return(sum(p^2))
 }
 
-cleaned_data <- fifa_players %>% select(Nationality,Club) %>% na.omit()
+cleaned_data <- fifa_players %>% select(Nationality,Club) %>% filter(Club != "")
 
 number_of_nationality_in_club <- cleaned_data %>% group_by(Club,Nationality) %>% summarise(count = n()) %>% group_by(Club) %>% summarise(N_nation=n()) %>% arrange(desc(N_nation)) %>% mutate(Club = factor(Club,level=unique(Club)))
 
 DIV_in_club <- cleaned_data %>% group_by(Club) %>% summarise(DIV = DIV(Nationality))%>% arrange(DIV)%>% mutate(Club = factor(Club,level=unique(Club)))  # arrange(desc(DIV)) %>% 
 
 # Plot number of different nationalities in each club
-g <- ggplot(data = number_of_nationality_in_club %>% head(10),aes(x = Club,y = N_nation,color = Club))
-g + geom_bar(stat="identity")
+g <- ggplot(data = number_of_nationality_in_club %>% head(10),aes(x = Club,y = N_nation,,fill= Club)) 
+g + geom_bar(stat="identity",color="black",width = 0.5) + theme(axis.text.x =element_blank(),axis.ticks.x = element_blank()) +labs(x="",y="Number of nationalities",title = "Clubs with the most nationalities of players") + coord_cartesian(ylim = c(0,20))
+
 
 # Plot DIV (diversity?) of different nationalities in each club
-g <- ggplot(data = DIV_in_club %>% head(10),aes(x = Club,y = DIV, color = Club))
-g <- g + geom_bar(stat="identity")
+g <- ggplot(data = DIV_in_club %>% head(10),aes(x = Club,y = DIV, fill = Club))
+g <- g + geom_bar(stat="identity",color="black",width = 0.5) + theme(axis.text.x =element_blank(),axis.ticks.x = element_blank()) + labs(x="",y="diversity",title ="diversity of different nationalities in each club" ) + coord_cartesian(ylim = c(0,0.15))
 g
 ```
 
