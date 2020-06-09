@@ -118,7 +118,7 @@ fifa_players %>% ggplot(aes(x = League, y = Overall,fill=League)) + geom_boxplot
 <br>**Answer**<br>
 
 It seems that Spain LIGA BBVA have especially good as we can see that their Q.75 is high compared to the other leagues. <br>
-Also we can se that the Switzerland Super League have especially bad players because,their Q.25 is low compared to the other leagues.
+Also we can see that the Switzerland Super League have especially bad players because,their Q.25 is low compared to the other leagues.
 
 
 **c)**
@@ -138,17 +138,17 @@ fifa_players %>% ggplot(aes(sample =ifelse(Wage==0,0,log(Wage)))) + stat_qq() + 
 ```
 <br>**Answer**<br>
 
-The logrithem scale of the wage density is a better visualization of than the <br> 
-non logrithem scale because it lets the viewer the density of players who make a high salary next to the players who make a low one. <br> 
-Unlike the non logrithem plot that show mostely the playres who make low salary. <br>
+The logarithm scale of the wage density is a better visualization of than the <br> 
+non logarithm scale because it lets the viewer the density of players who make a high salary next to the players who make a low one. <br> 
+Unlike the non logarithm plot that show mostly the players who make low salary. <br>
 
 The skewness & kurtosis of the  wage distribution are 7.016302 and 88.32211.<br>
 the skewness & kurtosis of the log wage distribution are -1.503398 and 7.967098.<br>
 
 Because the wage distribution has a skewness of 7.016302 it means that this <br> distribution has a "fat tail" on the positive side of the x axis.<br>
-Also, becaue the log wage distribution has a skewness of -1.503398 that this <br> distribution has a "fat tail" on the negative side of the x axis.<br>
+Also, because the log wage distribution has a skewness of -1.503398 that this <br> distribution has a "fat tail" on the negative side of the x axis.<br>
 
-The log wage distributiom is described by a Normal distribution from two reasons.<br>
+The log wage distribution is described by a Normal distribution from two reasons.<br>
 1) the the skewness & kurtosis of the log wage are closer to the one of a normal distribution(the skewness & kurtosis of the normal distribution are 0 ).<br>
 2) as we can see from the qq-plots about half of the data is fitted as we will<br>expect from a normal distribution(unlike the wage distribution who has a very "fat" tail). 
 
@@ -239,7 +239,7 @@ mapCountryData(jj2,nameColumnToPlot = "Overall_avg",catMethod=c(seq(50,75,5)),ma
 ```
 
 <br>**Answer**<br>
-I will recommend to travel to Algeria that has 57 players and have a Overall average of 70.94737
+We will recommend to travel to Algeria that has 57 players and have a Overall average of 70.94737
 
 
 
@@ -260,12 +260,12 @@ players_under_35 %>% group_by(Age) %>% summarise(difference_avg = mean(differenc
 
 ```
 <br>**Answer**<br>
-We should expect to find players for future development based on this graph<b>
-on the ages of 16/17, because those are the ages that have the most "space" for<br> future development between their Overall ability and thier Potential.  
+We should expect to find players for future development based on this graph<br>
+on the ages of 16/17, because those are the ages that have the most "space" for<br> future development between their Overall ability and their Potential.  
 <br>**e)**<br>
 
 ```{r}
-fifa_players_info %>% filter(Age<=21,Overall>70) %>% ggplot(aes(x=Wage,y=Potential)) + geom_point() + coord_cartesian(ylim = c(75,95),xlim = c(0,200000))
+fifa_players_info %>% filter(Age<=21,Overall>70) %>% ggplot(aes(x=Wage,y=Potential)) + geom_point() + coord_cartesian(ylim = c(75,95),xlim = c(0,200000)) +labs(title = "Potential as a function of wage")
 
 undervalued_players <- fifa_players_info %>% filter(Age<=21,Overall>70) %>%  arrange(Wage,desc(Potential)) %>% select(Name,Age,Nationality,Overall,Potential,Wage)
 
@@ -309,6 +309,7 @@ PLEASE ADD YOUR SOLUTION BELOW, WITH A CLEAR SEPARATION BETWEEN THE PARTS!
 
 **a)**
 ```{r}
+library(ggcorrplot)
 attri <- fifa_players_attribures %>% select(-GK.diving,-GK.handling,-GK.kicking,-GK.positioning,-GK.reflexes,-ID,-Overall) %>% cor() %>% round(2)
 
 melt_attri <- melt(attri)
@@ -331,7 +332,7 @@ attri <- attri %>% select(-ID)
 cor_pos_attri<-round(cor(pos_attri),2)
 cor_pos_attri <- cor_pos_attri[c(8:36),c(1:7)]
 
-cor_pos_attri %>% ggcorrplot() + scale_x_discrete(limit = colnames(attri)) + labs(title = "correlation between chosen positions and Overall and playres skils") + theme(title = element_text(color="black",size=8,face="bold"),axis.ticks = element_line())
+cor_pos_attri %>% ggcorrplot() + scale_x_discrete(limit = colnames(attri)) + labs(title = "correlation between chosen positions and Overall and players skils") + theme(title = element_text(color="black",size=8,face="bold"),axis.ticks = element_line(),axis.text.x = element_text(hjust = 1,angle = 90,vjust = 0.5))
 
 p <-as.data.frame(cor_pos_attri[,7])
 colnames(p)[1] <- "Overall"
@@ -342,7 +343,7 @@ p %>% arrange(desc(correlation_with_overall)) %>% head(7)
 ```
 
 **c)**
-```{r}
+```{r,fig.width= 10,fig.height= 10}
 library(fmsb)
 name_of_playres <- fifa_players_info %>% select(Name,ID)
 new_poss <- right_join(name_of_playres,pos,by="ID") %>% select(-ID,-Overall)
@@ -359,16 +360,18 @@ best_RW <- as.numeric(as.matrix(best_RW[3,]))
 best_ST <- new_poss  %>% arrange(desc(ST))
 best_ST <- as.numeric(as.matrix(best_ST[1,]))
 
-best_team <- as.data.frame(as.matrix(rbind(best_CAM,best_CB,best_CM,best_RB,best_RW,best_ST)))
-best_team <- best_team %>% select(-V1)
-best_team <- as.data.frame(rbind(rep(100,6),rep(45,6),best_team))
-rownames(best_team) <- c("max","min","L.Messi" , "Sergio Ramos" , "T.Kroos" , "	Marcelo" , "Neymar" , "Cristiano Ronaldo" )
-colnames(best_team)<- c("CAM","CB","CM","RB","RW","ST")
-radarchart(best_team,seg = 5,plwd = 2,axistype = 2,plty = 1,palcex = 0.8,vlcex = 0.7,pcol = c("red",
-"deeppink","dodgerblue4","gold","burlywood4","green4"),title = "DREAM TEAM")
+attri_name <- left_join(name_of_playres,fifa_players_attribures,by="ID") %>% select(-GK.diving,-GK.handling,-GK.kicking,-GK.positioning,-GK.reflexes,-ID) %>% filter(Name %in% c("L. Messi" , "Sergio Ramos" , "T. Kroos" , "Marcelo", "Neymar" , "Cristiano Ronaldo" ),Overall>80) %>% select(-Overall)
 
-legend(x=1.1, y=1, legend = rownames(best_team)[3:8], bty = "n", pch= 16 , text.col = "black",col =c("red",
-"deeppink","dodgerblue4","gold","burlywood4","green4") , cex=0.8, pt.cex=1)
+best_team <- as.data.frame(rbind(rep(100,6),rep(0,6),attri_name))
+rownames(best_team) <- c("max","min","Neymar" , "L. Messi","Cristiano Ronaldo", "T. Kroos","Sergio Ramos", "Marcelo" )
+best_team <- best_team %>% select(-Name)
+
+radarchart(best_team,seg = 5,plwd = 4,axistype = 2,plty = 1,palcex = 1,vlcex = 0.8,pcol = c("red",
+"deeppink","dodgerblue4","gold","burlywood4","green4"),title = "DREAM TEAM",cex.main = 2,centerzero = T)
+
+legend("top",legend = rownames(best_team)[3:8],horiz = T, pch= 16 , text.col = "black",col =c("red",
+"deeppink","dodgerblue4","gold","burlywood4","green4") , cex=0.6, pt.cex=1.5)
+
 
 right_join(name_of_playres,pos,by="ID") %>% select(-ID,Overall) %>% filter(Name %in% c("L. Messi","Sergio Ramos","T. Kroos","Marcelo","Neymar", "Cristiano Ronaldo"),Overall>=80) %>% select(Overall) %>% summarise(Overall=mean(Overall))
 
@@ -385,7 +388,11 @@ q %>%  ggplot(aes(x=Age,y=ability)) + geom_line(lwd=2,color="red") + coord_carte
 
 
 ```
+<br>**Answer**<br>
 
+The skils that peak at youngest ages are mostly the skils related to physical<br>
+abilities such as stamina,sprint speed, acceleration and more.
+and the skils that peak at old ages are the ones related to playing abilities that come with experience <br>such as vision,reactions, free kick and head <br> accuracy and more.
 
 **e)**
 ```{r}
@@ -412,6 +419,22 @@ b. Find *at least* three problematic issues with his plot, and explain them.
 c. Fix the problematic issues above in the code below to generate new, improved plots. 
 You will get an additional *bonus* point for finding any additional problem and fixing it.  
 
+<br>**Answers**<br>
+
+**a)**<br>
+On the first plot my predecessor tried to show the top 10 football clubs in<br>
+terms of number of different natinalities of the club's players<br>
+
+On the second plot the predecessor tried to show the diversity of players<br> natinalities mesured by Simpson's Diversity Index.<br>
+
+<br>**b)**<br>
+
+1) there are bars with missing lengeds(without them we can not match the<br>data to variable)<br>
+2) axies with unclear labels(the observer can not match the height of the bar<br> with the variable that the bar mesures and scale of mesurment).<br>
+3) there are no titles<br>(for example even if we knew that DIV stand for<br> diversity, the observer needs to know the scales units(like meters or inches if<br> we mesure height))<br>
+4)the colors of the bars are confusing to the observer(by coloring only the<br> outside of the bar, all the bars looks the same)
+
+
 
 
 ```{r}
@@ -419,7 +442,7 @@ You will get an additional *bonus* point for finding any additional problem and 
 DIV <- function(category_vec){
   t <- table(category_vec)
   p <- t/sum(t)
-  return(sum(p^2))
+  return (sum(p^2))
 }
 
 cleaned_data <- fifa_players %>% select(Nationality,Club) %>% filter(Club != "")
@@ -429,15 +452,22 @@ number_of_nationality_in_club <- cleaned_data %>% group_by(Club,Nationality) %>%
 DIV_in_club <- cleaned_data %>% group_by(Club) %>% summarise(DIV = DIV(Nationality))%>% arrange(DIV)%>% mutate(Club = factor(Club,level=unique(Club)))  # arrange(desc(DIV)) %>% 
 
 # Plot number of different nationalities in each club
-g <- ggplot(data = number_of_nationality_in_club %>% head(10),aes(x = Club,y = N_nation,,fill= Club)) 
+g <- ggplot(data = number_of_nationality_in_club %>% head(10),aes(x = Club,y = N_nation,fill= Club)) 
 g + geom_bar(stat="identity",color="black",width = 0.5) + theme(axis.text.x =element_blank(),axis.ticks.x = element_blank()) +labs(x="",y="Number of nationalities",title = "Clubs with the most nationalities of players") + coord_cartesian(ylim = c(0,20))
 
 
 # Plot DIV (diversity?) of different nationalities in each club
 g <- ggplot(data = DIV_in_club %>% head(10),aes(x = Club,y = DIV, fill = Club))
-g <- g + geom_bar(stat="identity",color="black",width = 0.5) + theme(axis.text.x =element_blank(),axis.ticks.x = element_blank()) + labs(x="",y="diversity",title ="diversity of different nationalities in each club" ) + coord_cartesian(ylim = c(0,0.15))
+g <- g + geom_bar(stat="identity",color="black",width = 0.5) + theme(axis.text.x =element_blank(),axis.ticks.x = element_blank()) + labs(x="",y="diversity",title ="diversity by Simpson's Diversity Index" ) + coord_cartesian(ylim = c(0,0.15))
 g
 ```
+<br>**Answer**<br>
+
+**a)**<br>
+
+
+
+
 
 PLEASE ADD YOUR SOLUTION BELOW, WITH A CLEAR SEPARATION BETWEEN THE PARTS! 
 
@@ -451,5 +481,83 @@ What is your conclusion regarding the relevancy of the fifa18 game dataset to th
 Use your best judgment to choose the appropriate data, models, analysis and plots to support your conclusions. 
 
 
-PLEASE ADD YOUR SOLUTION BELOW, WITH A CLEAR SEPARATION BETWEEN THE PARTS! 
+```{r,fig.height=5}
+fifa_ranking <- read.csv(url('https://raw.githubusercontent.com/DataScienceHU/DataAnalysisR_2020/master/data/fifa_ranking.csv'))
+
+fifa_rank <- fifa_ranking %>% filter(rank_date %in% c("2018-06-07","2018-05-17","2018-04-12","2018-03-15","2018-02-15","2018-01-18")) %>% select(rank,country_full,rank_date)
+
+top10_2018_jun <- fifa_rank %>% filter(rank_date == "2018-06-07") %>% head(50)
+top10_2018_may <- fifa_rank %>% filter(rank_date == "2018-05-17") %>% head(50)
+top10_2018_april <- fifa_rank %>% filter(rank_date == "2018-04-12") %>% head(50)
+top10_2018_march <- fifa_rank %>% filter(rank_date == "2018-03-15") %>% head(50)
+top10_2018_fab <- fifa_rank %>% filter(rank_date == "2018-02-15") %>% head(50)
+top10_2018_jan <- fifa_rank %>% filter(rank_date == "2018-01-18") %>% head(50)
+
+all<-rbind(top10_2018_jun,top10_2018_may,top10_2018_april,top10_2018_march,top10_2018_fab,top10_2018_jan)
+colnames(all)[2]<- "Nationality"
+
+uni_cont <-as.data.frame(unique(all$Nationality))
+ower_count <- fifa_players_info %>% filter(Overall >= 80) %>% group_by(Nationality) %>% summarise(count = n()) %>% arrange(desc(count)) %>% head(50) %>%  select(Nationality)
+colnames(uni_cont)[1] <- "Nationality"
+
+not_join <- anti_join(uni_cont,ower_count,by="Nationality")
+not_join
+
+```
+<br>**Answer**<br>
+
+Ower assmptions of the model is that the number of players with Overall<br> abilities that over 80 on each country can be seen in the top 50 football national teams.<br>
+
+After calculating all the teams that were on the top 50 football national teams <br>
+in the year 2018, we found out that there were 55 unique teams that were<br>
+at some point at the top 50 football national teams. <br>
+after we compared the list of top 50 national teams with Overall abilities that<br> over 80 with the 55 unique teams on fifa's rank <br>
+we found out that 18 of them dont match ower list of 50 teams. <br>
+it means that about 13 teams that appear on fifa's rank  <br>
+do not appear on ours. <br>
+It makes us assume there no strong relations between the number of players <br> with overall over 80 in each country to fifa's rank.<br> 
+
+Let's try another approach. <br>
+
+
+```{r}
+country_id <- fifa_players_info %>% select(Nationality,ID)
+country_score <- fifa_ranking %>% filter(rank_date %in% c("2018-06-07","2018-05-17","2018-04-12","2018-03-15","2018-02-15","2018-01-18")) %>% select(total_points,country_full) %>% group_by(country_full) %>% summarise(avg_total=mean(total_points))
+
+
+new_attri <- left_join(country_id,fifa_players_attribures,by="ID") 
+new_attri <- new_attri %>% select(-ID) %>% group_by(Nationality) %>% summarise_all(list(avg = mean))
+colnames(country_score)[1]<- "Nationality" 
+lm_table <- right_join(country_score,new_attri,by= "Nationality")
+
+lm_table %>% ggplot(aes(avg_total,Overall_avg)) + geom_point()
+
+lm_table$avg_total <- log(lm_table$avg_total)
+lm_table <- na.omit(lm_table)
+lm_table <- lm_table %>% filter(avg_total>=0)
+model_finish <- lm(avg_total ~.-Nationality -Overall_avg,data=lm_table)
+summary(model_finish)
+```
+ <br>
+ This time, we have tried to fit a linear model in order to predict <br>
+ the average fifa's score in all of 2018 mesurments by the average of <br>
+ the 36 skills that appear in the table fifa_players_attributes. <br>
+
+ As , we can see in the plot of average total fifa score of a state vs overall   average of players in that state<br>
+ there is some kind of exponential relation between the two. <br>
+ therefore, we will use the log of average total fifa score.<br>
+ 
+ The model that managed to predict only 42% of the log of average total fifa<br> score of a state variance.
+ 
+ therefore there is some relations between fifa's score and the average  attribures<br>
+ of the playres in the country.<br>
+ 
+ due to, the fact that football has many unexpected variables that do not<br>
+ depend on the players skills (such as injuries,bad calls of referees,managers and  so on).<br>
+ fitting a model with R squwerd of 42% is not a the worst model.<br>
+ therefore, we think that in some cases the fifa data set can predict<br>
+ fifa's rank.
+ 
+
+ 
 
