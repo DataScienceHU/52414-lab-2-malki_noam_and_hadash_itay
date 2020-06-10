@@ -427,15 +427,15 @@ You will get an additional *bonus* point for finding any additional problem and 
 
 **a)**<br>
 On the first plot my predecessor tried to show the top 10 football clubs in<br>
-terms of number of different natinalities of the club's players<br>
+terms of number of different nationalities of the club's players<br>
 
-On the second plot the predecessor tried to show the diversity of players<br> natinalities mesured by Simpson's Diversity Index.<br>
+On the second plot the predecessor tried to show the diversity of players<br> nationalities measured by Simpson's Diversity Index.<br>
 
 <br>**b)**<br>
 
 1) there are bars with missing lengeds(without them we can not match the<br>data to variable)<br>
-2) axies with unclear labels(the observer can not match the height of the bar<br> with the variable that the bar mesures and scale of mesurment).<br>
-3) there are no titles<br>(for example even if we knew that DIV stand for<br> diversity, the observer needs to know the scales units(like meters or inches if<br> we mesure height))<br>
+2) axies with unclear labels(the observer can not match the height of the bar<br> with the variable that the bar measures and scale of measurement).<br>
+3) there are no titles<br>(for example even if we knew that DIV stand for<br> diversity, the observer needs to know the scales units(like meters or inches if<br> we measure height))<br>
 4)the colors of the bars are confusing to the observer(by coloring only the<br> outside of the bar, all the bars looks the same)
 
 
@@ -510,13 +510,13 @@ not_join
 ```
 <br>**Answer**<br>
 
-Ower assmptions of the model is that countries with the most players with Overall<br> abilities that over 80 can be seen in the top 50 football national teams.<br>
+Our assumptions of the model is that countries with the most players with Overall<br> abilities that over 80 can be seen in the top 50 football national teams.<br>
 
 After calculating all the teams that were on the top 50 football national teams <br>
 in the year 2018, we found out that there were 55 unique teams that were<br>
 at some point at the top 50 football national teams. <br>
 after we compared the list of top 50 national teams with Overall abilities that<br> over 80 with the 55 unique teams on fifa's rank <br>
-we found out that 18 of them dont match ower list of 50 teams. <br>
+we found out that 18 of them dont match our list of 50 teams. <br>
 it means that about 13 teams that appear on fifa's rank  <br>
 do not appear on ours. <br>
 It makes us assume there no strong relations between the number of players <br> with overall over 80 in each country to fifa's rank.<br> 
@@ -530,7 +530,7 @@ country_score <- fifa_ranking %>% filter(rank_date %in% c("2018-06-07","2018-05-
 
 
 new_attri <- left_join(country_id,fifa_players_attribures,by="ID") 
-new_attri <- new_attri %>% select(-ID) %>% group_by(Nationality) %>% summarise_all(list(avg = mean))
+new_attri <- new_attri %>% select(-ID) %>% filter(Overall>=80) %>%   group_by(Nationality) %>% summarise_all(list(avg = mean))
 colnames(country_score)[1]<- "Nationality" 
 lm_table <- right_join(country_score,new_attri,by= "Nationality")
 
@@ -544,23 +544,24 @@ summary(model_finish)
 ```
  <br>
  This time, we have tried to fit a linear model in order to predict <br>
- the average fifa's score in all of 2018 mesurments by the average of <br>
- the 36 skills that appear in the table fifa_players_attributes. <br>
+ the average fifa's score in all of 2018 measurements by the average of <br>
+ the 36 skills that appear in the table fifa_players_attributes of all the<br>   players with overall ability of 80 or more  . <br>
 
  As , we can see in the plot of average total fifa score of a state vs overall   average of players in that state<br>
  there is some kind of exponential relation between the two. <br>
  therefore, we will use the log of average total fifa score.<br>
  
- The model that managed to predict only 43% of the log of average total fifa<br> score of a state variance.
+ The model that managed to predict 77% of the log of average total fifa<br> score of a state variance.
  
- therefore there is some relations between fifa's score and the average  attribures<br>
- of the playres in the country.<br>
+ therefore there is some relations between fifa's score and the average  attributes<br>
+ of the players in the country.<br>
  
  due to, the fact that football has many unexpected variables that do not<br>
- depend on the players skills (such as injuries,bad calls of referees,managers and  so on).<br>
- fitting a model with R squared of 43% is not a the worst model.<br>
+ depend on the players skills (such as injuries,bad calls of referees,managers   and  so on).<br>
+ fitting a model with R squared of 77% is not a the worst model<br>
+  but on the other hand adj R squared is low and most of the variables are        not<br> significant .<br>
  therefore, we think that in some cases the fifa data set can predict<br>
- fifa's rank.
+ fifa's rank. but it's important to choose and analyze each variable impact on<br>fifa's rank.<br>
  
 
  
