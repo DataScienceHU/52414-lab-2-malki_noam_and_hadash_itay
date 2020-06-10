@@ -105,12 +105,12 @@ fifa_players_positions<-fifa[,c(1,46:72,6)] # players ability at different posit
 
 **a)**
 ```{r}
-fifa_players %>% ggplot(aes(Age)) + geom_histogram(stat="count",color = "black", fill = "blue", bins = 33) + coord_cartesian(ylim = c(0,1500)) + scale_x_continuous(breaks = seq(16, 47, 5))
+fifa_players %>% ggplot(aes(Age)) + geom_histogram(stat="count",color = "black", fill = "blue", bins = 33) + coord_cartesian(ylim = c(0,1500)) + scale_x_continuous(breaks = seq(16, 47, 5)) +labs(title = " Age distribution of all players")
 ```
 
 **b)**
 ```{r}
-fifa_players %>% ggplot(aes(x = League, y = Overall,fill=League)) + geom_boxplot() + theme(axis.text.x=element_blank()) + scale_fill_discrete(name="League",labels =c("Belgium Jupiler League","England Premier League","France Ligue 1"," Germany Bundesliga"," Italy Serie A ","Netherlands Eredivisie","other","Poland Ekstraklasa","Portugal Liga ZON Sagres","Scotland Premier League","Spain LIGA BBVA","Switzerland Super League") )  
+fifa_players %>% ggplot(aes(x = League, y = Overall,fill=League)) + geom_boxplot() + theme(axis.text.x=element_blank()) + scale_fill_discrete(name="League",labels =c("Belgium Jupiler League","England Premier League","France Ligue 1"," Germany Bundesliga"," Italy Serie A ","Netherlands Eredivisie","other","Poland Ekstraklasa","Portugal Liga ZON Sagres","Scotland Premier League","Spain LIGA BBVA","Switzerland Super League") ) + labs(title = "Overall ability of players in different leagues")
 
 
 
@@ -125,15 +125,15 @@ Also we can see that the Switzerland Super League have especially bad players be
 
 ```{r}
 library(e1071)
-fifa_players %>% ggplot(aes(Wage)) + geom_density(fill="red") + scale_y_continuous(name="density", labels = comma) + scale_x_continuous(name="Wage", labels = comma)
+fifa_players %>% ggplot(aes(Wage)) + geom_density(fill="red") + scale_y_continuous(name="density", labels = comma) + scale_x_continuous(name="Wage", labels = comma) + labs(title = "density of players' salary")
 
-skewness(fifa_players$Wage)
-kurtosis(fifa_players$Wage)
-fifa_players %>% ggplot(aes(sample = Wage)) + stat_qq() + stat_qq_line(color="red")
-fifa_players_info %>% mutate(log_wage = ifelse(Wage==0,0,log(Wage))) %>% ggplot(aes(log_wage)) + geom_density(fill = "darkorange2") + labs(x="log wage") 
-skewness(ifelse(fifa_players$Wage==0,0,log(fifa_players$Wage)))
-kurtosis(ifelse(fifa_players$Wage==0,0,log(fifa_players$Wage)))
-fifa_players %>% ggplot(aes(sample =ifelse(Wage==0,0,log(Wage)))) + stat_qq() + stat_qq_line(color="red")
+round(skewness(fifa_players$Wage),3)
+round(kurtosis(fifa_players$Wage),3)
+fifa_players %>% ggplot(aes(sample = Wage)) + stat_qq() + labs(title = "qq plot of wage density") + stat_qq_line(color="red")
+fifa_players_info %>% mutate(log_wage = ifelse(Wage==0,0,log(Wage))) %>% ggplot(aes(log_wage)) + geom_density(fill = "darkorange2") + labs(x="log wage",title = "density of players' salary log scale") 
+round(skewness(ifelse(fifa_players$Wage==0,0,log(fifa_players$Wage))),3)
+round(kurtosis(ifelse(fifa_players$Wage==0,0,log(fifa_players$Wage)),3))
+fifa_players %>% ggplot(aes(sample =ifelse(Wage==0,0,log(Wage)))) + stat_qq() + stat_qq_line(color="red") + labs(title = "qq plot of wage density log scale" )
 
 ```
 <br>**Answer**<br>
@@ -142,11 +142,11 @@ The logarithm scale of the wage density is a better visualization of than the <b
 non logarithm scale because it lets the viewer the density of players who make a high salary next to the players who make a low one. <br> 
 Unlike the non logarithm plot that show mostly the players who make low salary. <br>
 
-The skewness & kurtosis of the  wage distribution are 7.016302 and 88.32211.<br>
-the skewness & kurtosis of the log wage distribution are -1.503398 and 7.967098.<br>
+The skewness & kurtosis of the  wage distribution are 7.016 and 88.322.<br>
+the skewness & kurtosis of the log wage distribution are -1.503 and 7.967.<br>
 
-Because the wage distribution has a skewness of 7.016302 it means that this <br> distribution has a "fat tail" on the positive side of the x axis.<br>
-Also, because the log wage distribution has a skewness of -1.503398 that this <br> distribution has a "fat tail" on the negative side of the x axis.<br>
+Because the wage distribution has a skewness of 7.016 it means that this <br> distribution has a "fat tail" on the positive side of the x axis.<br>
+Also, because the log wage distribution has a skewness of -1.503 that this <br> distribution has a "fat tail" on the negative side of the x axis.<br>
 
 The log wage distribution is described by a Normal distribution from two reasons.<br>
 1) the the skewness & kurtosis of the log wage are closer to the one of a normal distribution(the skewness & kurtosis of the normal distribution are 0 ).<br>
@@ -176,8 +176,10 @@ top_teams <- fifa_players_info %>% group_by(Club) %>% summarise(Overall_avg = me
 worst_teams <- fifa_players_info %>% group_by(Club) %>% summarise(Overall_avg = mean(Overall)) %>% arrange(Overall_avg)
 top_ten_teams<-head(top_teams,10)
 worst_ten_teams<-head(worst_teams,10)
+worst_ten_teams$Overall_avg <- round(worst_ten_teams$Overall_avg,3)
 combo <- cbind(top_ten_teams,worst_ten_teams)
 names(combo)<-c("top","overall","worst","overall")
+combo$overall<-round(combo$overall,3)
 combo
 ```
 
@@ -211,14 +213,12 @@ natinal <- table(nati)
 natinal <- as.data.frame(natinal)
 colnames(natinal)[1]<- "Country"
 jj <- joinCountryData2Map(natinal,nameJoinColumn = "Country",joinCode = "NAME")
-mapCountryData(jj,"Freq",mapTitle = "NUMBER OF PLAYERS",lwd = 1.3,catMethod=c(seq(0,2100,150)))
+mapCountryData(jj,"Freq",mapTitle = "Number of players in each country",lwd = 1.3,catMethod=c(seq(0,2100,150)))
 
 
 ```
 
 
-<br>**Answer**<br>
-I will recommend to travel to Algeria that has 57 players and
 
 
 
@@ -234,7 +234,7 @@ map_over<-as.data.frame(map_over)
 colnames(map_over)[1] <- "Country"
 map_over$Overall_avg<-as.numeric(as.character(map_over$Overall_avg))
 jj2<-joinCountryData2Map(map_over,nameJoinColumn = "Country","NAME")
-mapCountryData(jj2,nameColumnToPlot = "Overall_avg",catMethod=c(seq(50,75,5)),mapTitle = "Overall average")
+mapCountryData(jj2,nameColumnToPlot = "Overall_avg",catMethod=c(seq(50,75,5)),mapTitle = "Overall average of players in each country")
 
 ```
 
@@ -280,7 +280,11 @@ under_all %>% select(Name,Potential,Wage,`fair salary offer`) %>% arrange(Wage,d
 
 
 ```
+<br>**Answer**<br>
 
+We calculated the fair offer by taking the average of all the players<br>
+with the same Potential as the undervalued players.<br>
+therefore paying a player the average salary that match his ability.
 
 
 ## Q3. Model Building (30 pt)
@@ -403,7 +407,7 @@ summary(model)
 
 ski <-cbind(ski,model$fitted.values)
 colnames(ski)[33] <- "fitted values"
-ski <- ski %>% mutate(diff= Overall -`fitted values`) # computing the eror manualy
+ski <- ski %>% mutate(diff= round(Overall -`fitted values`,3)) # computing the eror manualy
 ski %>% select(Name,Overall,`fitted values`,diff) %>% arrange(diff) %>%  head(10)
 ```
 
@@ -506,7 +510,7 @@ not_join
 ```
 <br>**Answer**<br>
 
-Ower assmptions of the model is that the number of players with Overall<br> abilities that over 80 on each country can be seen in the top 50 football national teams.<br>
+Ower assmptions of the model is that countries with the most players with Overall<br> abilities that over 80 can be seen in the top 50 football national teams.<br>
 
 After calculating all the teams that were on the top 50 football national teams <br>
 in the year 2018, we found out that there were 55 unique teams that were<br>
@@ -530,7 +534,7 @@ new_attri <- new_attri %>% select(-ID) %>% group_by(Nationality) %>% summarise_a
 colnames(country_score)[1]<- "Nationality" 
 lm_table <- right_join(country_score,new_attri,by= "Nationality")
 
-lm_table %>% ggplot(aes(avg_total,Overall_avg)) + geom_point()
+lm_table %>% ggplot(aes(avg_total,Overall_avg)) + geom_point() +labs(title = "Overall average per country vs average total points in fifa score 2018",y="Overall average",x="Total score average")
 
 lm_table$avg_total <- log(lm_table$avg_total)
 lm_table <- na.omit(lm_table)
@@ -547,14 +551,14 @@ summary(model_finish)
  there is some kind of exponential relation between the two. <br>
  therefore, we will use the log of average total fifa score.<br>
  
- The model that managed to predict only 42% of the log of average total fifa<br> score of a state variance.
+ The model that managed to predict only 43% of the log of average total fifa<br> score of a state variance.
  
  therefore there is some relations between fifa's score and the average  attribures<br>
  of the playres in the country.<br>
  
  due to, the fact that football has many unexpected variables that do not<br>
  depend on the players skills (such as injuries,bad calls of referees,managers and  so on).<br>
- fitting a model with R squwerd of 42% is not a the worst model.<br>
+ fitting a model with R squared of 43% is not a the worst model.<br>
  therefore, we think that in some cases the fifa data set can predict<br>
  fifa's rank.
  
